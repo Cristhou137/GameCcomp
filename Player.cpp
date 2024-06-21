@@ -1,84 +1,41 @@
 #include "Player.h"
-#include <iostream>
+#include <SFML/Window/Keyboard.hpp>
 
-Player::Player(const Stats& stats)
-    : Entity(50, sf::Color::Blue), playerStats(stats) {
-    playerStats.setMovementSpeed(1.0f);
-}
-
-Player::~Player() {}
-
-void Player::update(sf::RenderWindow& window) {
-    Entity::updateHitbox();
+Player::Player() : target(nullptr) {
+    shape.setFillColor(sf::Color::Blue);
+    hitbox.setOutlineColor(sf::Color::Green);
+    directionIndicator.setFillColor(sf::Color::Green);
+    setMovementSpeed(250.0f); // Inicialización de ejemplo de estadísticas en unidades por segundo
+    Assignment(100, 5, 10, 5, 10, 5, 0.1f, 0.1f, 5, 250.0f, 1.0f, 0.1f); // Inicializar estadísticas
+    shape.setPosition(0.0f, 300.0f); // Establecer posición inicial del enemigo
+    updateHitbox();
     updateDirectionIndicator();
 }
 
-void Player::draw(sf::RenderWindow& window) {
-    Entity::draw(window);
+void Player::movement(float deltaTime) {
+    sf::Vector2f direction(0.0f, 0.0f);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) direction.y -= 1.0f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) direction.y += 1.0f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) direction.x -= 1.0f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) direction.x += 1.0f;
+
+    normalize(direction);
+    shape.move(direction * movementSpeed * deltaTime);
+    updateHitbox();
+    updateDirectionIndicator();
 }
 
 void Player::setObjective(Entity* target) {
-    objective = target;
-}
-
-bool Player::objectiveTargeted() const {
-    return objective != nullptr;
-}
-
-void Player::updateDirectionIndicator() {
-    if (objective) {
+    this->target = target;
+    if (target) {
         directionIndicator.setFillColor(sf::Color::Red);
     }
     else {
         directionIndicator.setFillColor(sf::Color::Green);
     }
-    directionIndicator.setPosition(shape.getPosition().x + shape.getRadius(), shape.getPosition().y + shape.getRadius());
 }
 
-void Player::updateMovement(float deltaTime) {
-    float movementSpeed = playerStats.getAdjustedMovementSpeed(deltaTime);
-    sf::Vector2f movement(0.0f, 0.0f);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) movement.y -= movementSpeed;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) movement.y += movementSpeed;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) movement.x -= movementSpeed;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) movement.x += movementSpeed;
-
-    shape.move(movement);
-    updateHitbox();
-    updateDirectionIndicator();
-}
-
-void Player::handleInput() {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) moveUp();
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) moveDown();
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) moveLeft();
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) moveRight();
-}
-
-void Player::moveUp() {
-    sf::Vector2f direction(0.0f, -playerStats.getMovementSpeed());
-    shape.move(direction);
-    updateHitbox();
-    updateDirectionIndicator();
-}
-
-void Player::moveDown() {
-    sf::Vector2f direction(0.0f, playerStats.getMovementSpeed());
-    shape.move(direction);
-    updateHitbox();
-    updateDirectionIndicator();
-}
-
-void Player::moveLeft() {
-    sf::Vector2f direction(-playerStats.getMovementSpeed(), 0.0f);
-    shape.move(direction);
-    updateHitbox();
-    updateDirectionIndicator();
-}
-
-void Player::moveRight() {
-    sf::Vector2f direction(playerStats.getMovementSpeed(), 0.0f);
-    shape.move(direction);
-    updateHitbox();
-    updateDirectionIndicator();
+bool Player::objectiveTargeted() const {
+    return target != nullptr;
 }

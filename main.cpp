@@ -1,33 +1,61 @@
 #include <SFML/Graphics.hpp>
-#include "Hero.h"
+#include "Player.h"
+#include "Enemy.h"
+#include <vector>
 
 int main() {
-    Entity* player = new Hero();
+    // Crear objetos del jugador y enemigo
+    Entity* player = new Player();
+    Entity* enemy = new Enemy();
 
-    sf::RenderWindow window(sf::VideoMode(1920, 1080), "RPG Game");
+    // Vector para almacenar todos los objetos del juego
+    std::vector<Entity*> entities = { player, enemy };
 
+    // Crear la ventana del juego
+    sf::RenderWindow window(sf::VideoMode(800, 600), "RPG Game");
+
+    // Reloj para medir el tiempo entre fotogramas
     sf::Clock clock;
 
+    // Bucle principal del juego
     while (window.isOpen()) {
-        sf::Time deltaTime = clock.restart();
-
+        // Procesar eventos
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
 
-        static_cast<Player*>(player)->handleInput();
+        // Calcular el tiempo transcurrido desde el último fotograma
+        float deltaTime = clock.restart().asSeconds();
 
-        player->updateMovement(deltaTime.asSeconds());
+        // Actualizar el movimiento del jugador
+        player->movement(deltaTime);
 
+        // Actualizar el objetivo de los enemigos
+        dynamic_cast<Enemy*>(enemy)->findClosestTarget(entities);
 
+        // Actualizar el movimiento de los enemigos
+        enemy->movement(deltaTime);
+
+        // Ejecutar la habilidad reduceMV del enemigo
+        dynamic_cast<Enemy*>(enemy)->reduceMV(player);
+
+        // Limpiar la ventana
         window.clear();
-        player->draw(window);
+
+        // Dibujar todos los objetos del juego
+        for (Entity* entity : entities) {
+            entity->draw(window);
+        }
+
+        // Mostrar la ventana
         window.display();
     }
 
+    // Liberar memoria
     delete player;
+    delete enemy;
 
     return 0;
 }
