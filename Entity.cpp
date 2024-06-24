@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity() {
+Entity::Entity() : markedForDeath(false) {
     shape.setRadius(20.0f);
     shape.setFillColor(sf::Color::Blue);
     shape.setOrigin(20.0f, 20.0f);
@@ -37,7 +37,6 @@ void Entity::updateHitbox() {
 
 void Entity::updateDirectionIndicator() {
     directionIndicator.setPosition(shape.getPosition());
-    // Aquí puedes ajustar la rotación del indicador si es necesario
 }
 
 void Entity::normalize(sf::Vector2f& vector) {
@@ -48,6 +47,9 @@ void Entity::normalize(sf::Vector2f& vector) {
 
 void Entity::setHealth(int value) {
     health = value;
+    if (health <= 0) {
+        Death();  // Llamar a Death si la salud llega a cero o menos
+    }
 }
 
 int Entity::getHealth() const {
@@ -142,12 +144,10 @@ float Entity::getCooldownReduction() const {
     return cooldownReduction;
 }
 
-void Entity::setCooldownSeconds(float seconds) {
-    cooldownSeconds = seconds;
-}
-
-float Entity::getCooldownSeconds() const {
-    return cooldownSeconds;
+void Entity::setPosition(const sf::Vector2f& position) {
+    shape.setPosition(position);
+    hitbox.setPosition(position);
+    directionIndicator.setPosition(position);
 }
 
 void Entity::Assignment(int health, int healthRegen, int attackDamage, int armor,
@@ -165,4 +165,12 @@ void Entity::Assignment(int health, int healthRegen, int attackDamage, int armor
     setMovementSpeed(movementSpeed);
     setAttackSpeed(attackSpeed);
     setCooldownReduction(cooldownReduction);
+}
+
+void Entity::Death() {
+    markedForDeath = true;  // Marcar para destrucción
+}
+
+bool Entity::isMarkedForDeath() const {
+    return markedForDeath;
 }

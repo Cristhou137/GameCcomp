@@ -11,6 +11,8 @@ public:
     void setObjective(Entity* target) override;
     bool objectiveTargeted() const override;
 
+    void setPosition(const sf::Vector2f& position);
+
 private:
     Entity* target;
 };

@@ -13,7 +13,9 @@ public:
     virtual bool objectiveTargeted() const = 0;
     virtual void draw(sf::RenderWindow& window);
 
-    sf::Vector2f getPosition() const; // Añadir esta línea
+    sf::Vector2f getPosition() const;
+
+    void setPosition(const sf::Vector2f& position);
 
     void setHealth(int value);
     int getHealth() const;
@@ -51,14 +53,14 @@ public:
     void setCooldownReduction(float value);
     float getCooldownReduction() const;
 
-    void setCooldownSeconds(float seconds);
-    float getCooldownSeconds() const;
-
     void Assignment(int health, int healthRegen, int attackDamage, int armor,
         int magicPower, int magicResistance, float evasionChance, float criticalChance,
         int lifeSteal, float movementSpeed, float attackSpeed, float cooldownReduction);
 
-protected:
+    void Death();  // Añadir la función Death
+    bool isMarkedForDeath() const;  // Método para comprobar si está marcado para destrucción
+
+protected: // Cambiar de private a protected
     sf::CircleShape shape;
     sf::RectangleShape hitbox;
     sf::ConvexShape directionIndicator;
@@ -79,7 +81,8 @@ protected:
     float movementSpeed;
     float attackSpeed;
     float cooldownReduction;
-    float cooldownSeconds;
+
+    bool markedForDeath;  // Añadir un flag para marcar la destrucción
 };
 
 #endif // ENTITY_H

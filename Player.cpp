@@ -5,9 +5,9 @@ Player::Player() : target(nullptr) {
     shape.setFillColor(sf::Color::Blue);
     hitbox.setOutlineColor(sf::Color::Green);
     directionIndicator.setFillColor(sf::Color::Green);
-    setMovementSpeed(250.0f); // Inicialización de ejemplo de estadísticas en unidades por segundo
-    Assignment(100, 5, 10, 5, 10, 5, 0.1f, 0.1f, 5, 250.0f, 1.0f, 0.1f); // Inicializar estadísticas
-    shape.setPosition(0.0f, 300.0f); // Establecer posición inicial del enemigo
+    setMovementSpeed(250.0f); 
+    Assignment(100, 5, 10, 5, 10, 5, 0.1f, 0.1f, 5, 250.0f, 1.0f, 0.1f); 
+    shape.setPosition(0.0f, 300.0f);
     updateHitbox();
     updateDirectionIndicator();
 }
@@ -38,4 +38,8 @@ void Player::setObjective(Entity* target) {
 
 bool Player::objectiveTargeted() const {
     return target != nullptr;
+}
+
+void Player::setPosition(const sf::Vector2f& position) {
+    Entity::setPosition(position);
 }

@@ -2,23 +2,25 @@
 #define ENEMY_H
 
 #include "Entity.h"
-#include <cstdlib> 
-#include <ctime>
+#include "Player.h"
+#include <vector>
 
 class Enemy : public Entity {
 public:
     Enemy();
+    virtual void movement(float deltaTime) override;
+    virtual void setObjective(Entity* target) override;
+    virtual bool objectiveTargeted() const override;
 
-    void movement(float deltaTime) override;
-    void setObjective(Entity* target) override;
-    bool objectiveTargeted() const override;
+    virtual void findClosestTarget(const std::vector<Entity*>& entities); // Declaración de findClosestTarget
+    void reduceMV(Entity* target); // Declaración de reduceMV
 
-    void findClosestTarget(const std::vector<Entity*>& entities);
+    static std::vector<Enemy*> generateEnemies(int count, const sf::Vector2f& origin);
+    void setPosition(const sf::Vector2f& position);
 
-    void reduceMV(Entity* target);
-
-private:
+protected:
     Entity* target;
+    float movementSpeed;
 };
 
 #endif // ENEMY_H
